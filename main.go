@@ -1,4 +1,4 @@
-package ac_ir_cmd
+package main
 
 // #cgo LDFLAGS: -lm -lpigpio -pthread -lrt
 // #include <stdio.h>
