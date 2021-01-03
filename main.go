@@ -39,6 +39,8 @@ func main() {
 	http.HandleFunc("/set", setState)
 	http.HandleFunc("/temp", getTemp)
 
+	fmt.Printf("Starting server...")
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
@@ -54,8 +56,8 @@ func setState(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
-	fmt.Printf("Requested Command: ", decodedBody.GetCommand())
+
+	fmt.Printf("Requested State %#v and Command %s", decodedBody, decodedBody.GetCommand())
 
 	sendIrCommand(&decodedBody)
 }
