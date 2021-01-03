@@ -38,7 +38,9 @@ type AcState struct {
 func (fan FanSpeed) validate() bool {
 	switch fan {
 	case LOW:
+		fallthrough
 	case MEDIUM:
+		fallthrough
 	case HIGH:
 		return true
 	}
@@ -60,8 +62,11 @@ func (fan FanSpeed) fanBinary() uint32 {
 func (mode Mode) validate() bool {
 	switch mode {
 	case COOL:
+		fallthrough
 	case DRY:
+		fallthrough
 	case FAN:
+		fallthrough
 	case MONEY_SAVER:
 		return true
 	}
@@ -83,8 +88,7 @@ func (mode Mode) modeBinary() uint32 {
 }
 
 func (temp Fahrenheit) validate() bool {
-	//return temp <= 75 && temp >= 65
-	return true
+	return temp <= 86 && temp >= 60
 }
 
 func (temp Fahrenheit) tempBinary() uint32 {
