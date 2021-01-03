@@ -1,7 +1,6 @@
 package state
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -29,10 +28,10 @@ const (
 )
 
 type AcState struct {
-	Fan   FanSpeed   `json:"fan"`
-	Mode  Mode       `json:"mode"`
+	Fan   *FanSpeed   `json:"fan"`
+	Mode  *Mode       `json:"mode"`
 	Power PowerState `json:"power"`
-	Temp  Fahrenheit `json:"temp"`
+	Temp  *Fahrenheit `json:"temp"`
 }
 
 func (fan FanSpeed) validate() bool {
@@ -130,22 +129,15 @@ func (ac AcState) GetCommand() string {
 }
 
 func (ac AcState) IsValid() bool {
-	fmt.Printf("%b %b %b %b", ac.Mode.validate(), ac.Fan.validate(), ac.Power.validate(), ac.Temp.validate())
+	if !ac.Power.validate() {
+		return false
+	}
+
+	if ac.Power == POWER_OFF {
+		return true
+	}
+
 	return ac.Mode.validate() &&
 		ac.Fan.validate() &&
-		ac.Power.validate() &&
 		ac.Temp.validate()
-}
-
-func NewAcState(fan string, mode string, power string, temp string) *AcState {
-	fanUint, _ := strconv.ParseUint(fan, 10, 32)
-	modeUint, _ := strconv.ParseUint(mode, 10, 32)
-	powerUint, _ := strconv.ParseUint(power, 10, 32)
-	tempUint, _ := strconv.ParseUint(temp, 10, 32)
-	return &AcState{
-		FanSpeed(fanUint),
-		Mode(modeUint),
-		PowerState(powerUint),
-		Fahrenheit(tempUint),
-	}
 }

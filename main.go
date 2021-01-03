@@ -26,16 +26,6 @@ var defaultAcState = &state.AcState{
 }
 
 func main() {
-	//if len(os.Args) < 5 {
-	//	fmt.Println("Expecting: fan speed (1-3), mode (1-4), power (0/1), Temp (60-86)")
-	//	os.Exit(1)
-	//}
-	//
-	//acState := state.NewAcState(os.Args[1], os.Args[2], os.Args[3], os.Args[4])
-	//fmt.Printf("AC State -> Cmd: %s\n", acState.GetCommand())
-	//
-	//sendIrCommand(acState)
-
 	http.HandleFunc("/set", setState)
 	http.HandleFunc("/temp", getTemp)
 
@@ -63,7 +53,7 @@ func setState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Requested State %#v and Command %s\n", decodedBody, decodedBody.GetCommand())
+	fmt.Printf("Requested State %#v\n", decodedBody)
 
 	sendIrCommand(&decodedBody)
 }
