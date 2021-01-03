@@ -6,8 +6,11 @@ package ac_ir_cmd
 // #include "irslinger.h"
 import "C"
 import (
+	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"unsafe"
 
 	"./state"
@@ -24,18 +27,63 @@ var defaultAcState = &state.AcState{
 }
 
 func main() {
-	if len(os.Args) < 5 {
-		fmt.Println("Expecting: fan speed (1-3), mode (1-4), power (0/1), Temp (60-86)")
-		os.Exit(1)
-	}
+	//if len(os.Args) < 5 {
+	//	fmt.Println("Expecting: fan speed (1-3), mode (1-4), power (0/1), Temp (60-86)")
+	//	os.Exit(1)
+	//}
+	//
+	//acState := state.NewAcState(os.Args[1], os.Args[2], os.Args[3], os.Args[4])
+	//fmt.Printf("AC State -> Cmd: %s\n", acState.GetCommand())
+	//
+	//sendIrCommand(acState)
 
-	acState := state.NewAcState(os.Args[1], os.Args[2], os.Args[3], os.Args[4])
-	fmt.Printf("AC State -> Cmd: %s\n", acState.GetCommand())
+	http.HandleFunc("/set", setState)
+	http.HandleFunc("/temp", getTemp)
 
-	sendIrCommand(acState.GetCommand())
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func sendIrCommand(commandStr string) {
+func setState(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	reader, err := r.GetBody()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	requestBody, err := ioutil.ReadAll(reader)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	decodedBody := state.AcState{}
+
+	if err := json.Unmarshal(requestBody, &decodedBody); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("Requested Command: ", decodedBody.GetCommand())
+
+	sendIrCommand(&decodedBody)
+}
+
+func getTemp(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	_, err := w.Write([]byte("18"))
+	if err != nil {
+		fmt.Printf("Failed to write temp")
+	}
+}
+
+func sendIrCommand(acState *state.AcState) {
+	commandStr := acState.GetCommand()
 	commandStrC := C.CString(commandStr)
 	defer C.free(unsafe.Pointer(commandStrC))
 

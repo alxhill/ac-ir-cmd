@@ -5,34 +5,34 @@ import (
 	"strconv"
 )
 
-type FanSpeed uint8
-type Mode uint8
-type PowerState uint8
+type FanSpeed string
+type Mode string
+type PowerState string
 type Farenheit uint8
 
 const (
-	LOW FanSpeed = iota
-	MEDIUM
-	HIGH
+	LOW FanSpeed = "low"
+	MEDIUM = "medium"
+	HIGH = "high"
 )
 
 const (
-	FAN Mode = iota
-	COOL
-	DRY
-	MONEY_SAVER
+	FAN Mode = "fan"
+	COOL = "cool"
+	DRY = "dry"
+	MONEY_SAVER = "money-saver"
 )
 
 const (
-	POWER_OFF PowerState = iota
-	POWER_ON
+	POWER_ON PowerState = "on"
+	POWER_OFF = "off"
 )
 
 type AcState struct {
-	Fan   FanSpeed
-	Mode  Mode
-	Power PowerState
-	Temp  Farenheit
+	Fan   FanSpeed `json:"fan"`
+	Mode  Mode `json:"mode"`
+	Power PowerState `json:"power"`
+	Temp  Farenheit `json:"temp"`
 }
 
 func (fan FanSpeed) fanBinary() uint32 {
@@ -63,21 +63,24 @@ func (mode Mode) modeBinary() uint32 {
 
 func (temp Farenheit) tempBinary() uint32 {
 	if temp < 75 {
-		var cmdTemp uint32 = uint32(temp) - 59
+		var cmdTemp = uint32(temp) - 59
 		return cmdTemp << 1
 	}
-	var cmdTemp uint32 = uint32(temp) - 75
+	var cmdTemp = uint32(temp) - 75
 	return cmdTemp<<1 | 1
 }
 
-func (PowerState) powerBinary() uint32 {
+func (power PowerState) powerBinary() uint32 {
+	if power == POWER_OFF {
+		panic("not implemented")
+	}
 	return 0x0
 }
 
 func (ac AcState) GetCommand() string {
-	//if ac.Power == POWER_OFF {
-	//	return "1000100011000000000001010001"
-	//}
+	if ac.Power == POWER_OFF {
+		return "1000100011000000000001010001"
+	}
 
 	var startBits uint32 = 0x882
 
