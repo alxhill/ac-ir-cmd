@@ -8,7 +8,6 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"unsafe"
@@ -49,26 +48,13 @@ func setState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reader, err := r.GetBody()
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	requestBody, err := ioutil.ReadAll(reader)
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
+	decoder := json.NewDecoder(r.Body)
 	decodedBody := state.AcState{}
-
-	if err := json.Unmarshal(requestBody, &decodedBody); err != nil {
+	if err := decoder.Decode(&decodedBody); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
+	
 	fmt.Printf("Requested Command: ", decodedBody.GetCommand())
 
 	sendIrCommand(&decodedBody)
