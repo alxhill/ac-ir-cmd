@@ -28,10 +28,10 @@ const (
 )
 
 type AcState struct {
-	Fan   *FanSpeed   `json:"fan"`
-	Mode  *Mode       `json:"mode"`
+	Fan   FanSpeed   `json:"fan"`
+	Mode  Mode       `json:"mode"`
 	Power PowerState `json:"power"`
-	Temp  *Fahrenheit `json:"temp"`
+	Temp  Fahrenheit `json:"temp"`
 }
 
 func (fan FanSpeed) validate() bool {
