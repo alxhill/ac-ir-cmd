@@ -8,7 +8,7 @@ import (
 type FanSpeed string
 type Mode string
 type PowerState string
-type Farenheit uint8
+type Fahrenheit uint8
 
 const (
 	LOW FanSpeed = "low"
@@ -29,10 +29,20 @@ const (
 )
 
 type AcState struct {
-	Fan   FanSpeed `json:"fan"`
-	Mode  Mode `json:"mode"`
+	Fan   FanSpeed   `json:"fan"`
+	Mode  Mode       `json:"mode"`
 	Power PowerState `json:"power"`
-	Temp  Farenheit `json:"temp"`
+	Temp  Fahrenheit `json:"temp"`
+}
+
+func (fan FanSpeed) validate() bool {
+	switch fan {
+	case LOW:
+	case MEDIUM:
+	case HIGH:
+		return true
+	}
+	return false
 }
 
 func (fan FanSpeed) fanBinary() uint32 {
@@ -45,6 +55,17 @@ func (fan FanSpeed) fanBinary() uint32 {
 		return 0x4
 	}
 	return 0x0
+}
+
+func (mode Mode) validate() bool {
+	switch mode {
+	case COOL:
+	case DRY:
+	case FAN:
+	case MONEY_SAVER:
+		return true
+	}
+	return false
 }
 
 func (mode Mode) modeBinary() uint32 {
@@ -61,13 +82,21 @@ func (mode Mode) modeBinary() uint32 {
 	return 0x6
 }
 
-func (temp Farenheit) tempBinary() uint32 {
+func (temp Fahrenheit) validate() bool {
+	return temp <= 75 && temp >= 65
+}
+
+func (temp Fahrenheit) tempBinary() uint32 {
 	if temp < 75 {
 		var cmdTemp = uint32(temp) - 59
 		return cmdTemp << 1
 	}
 	var cmdTemp = uint32(temp) - 75
 	return cmdTemp<<1 | 1
+}
+
+func (power PowerState) validate() bool {
+	return power == POWER_OFF || power == POWER_ON
 }
 
 func (power PowerState) powerBinary() uint32 {
@@ -95,6 +124,13 @@ func (ac AcState) GetCommand() string {
 	return strconv.FormatUint(uint64(cmd), 2)
 }
 
+func (ac AcState) IsValid() bool {
+ 	return ac.Mode.validate() &&
+ 	ac.Fan.validate() &&
+ 	ac.Power.validate() &&
+ 	ac.Temp.validate()
+}
+
 func NewAcState(fan string, mode string, power string, temp string) *AcState {
 	fanUint, _ := strconv.ParseUint(fan, 10, 32)
 	modeUint, _ := strconv.ParseUint(mode, 10, 32)
@@ -104,6 +140,6 @@ func NewAcState(fan string, mode string, power string, temp string) *AcState {
 		FanSpeed(fanUint),
 		Mode(modeUint),
 		PowerState(powerUint),
-		Farenheit(tempUint),
+		Fahrenheit(tempUint),
 	}
 }

@@ -57,6 +57,12 @@ func setState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !decodedBody.IsValid() {
+		fmt.Printf("Invalid state %#v", decodedBody)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	fmt.Printf("Requested State %#v and Command %s", decodedBody, decodedBody.GetCommand())
 
 	sendIrCommand(&decodedBody)
