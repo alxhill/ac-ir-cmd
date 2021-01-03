@@ -1,7 +1,7 @@
 package state
 
-
 import (
+	"fmt"
 	"strconv"
 )
 
@@ -11,21 +11,21 @@ type PowerState string
 type Fahrenheit uint8
 
 const (
-	LOW FanSpeed = "low"
-	MEDIUM = "medium"
-	HIGH = "high"
+	LOW    FanSpeed = "low"
+	MEDIUM          = "medium"
+	HIGH            = "high"
 )
 
 const (
-	FAN Mode = "fan"
-	COOL = "cool"
-	DRY = "dry"
-	MONEY_SAVER = "money-saver"
+	FAN         Mode = "fan"
+	COOL             = "cool"
+	DRY              = "dry"
+	MONEY_SAVER      = "money-saver"
 )
 
 const (
-	POWER_ON PowerState = "on"
-	POWER_OFF = "off"
+	POWER_ON  PowerState = "on"
+	POWER_OFF            = "off"
 )
 
 type AcState struct {
@@ -83,7 +83,8 @@ func (mode Mode) modeBinary() uint32 {
 }
 
 func (temp Fahrenheit) validate() bool {
-	return temp <= 75 && temp >= 65
+	//return temp <= 75 && temp >= 65
+	return true
 }
 
 func (temp Fahrenheit) tempBinary() uint32 {
@@ -125,10 +126,11 @@ func (ac AcState) GetCommand() string {
 }
 
 func (ac AcState) IsValid() bool {
- 	return ac.Mode.validate() &&
- 	ac.Fan.validate() &&
- 	ac.Power.validate() &&
- 	ac.Temp.validate()
+	fmt.Printf("%b %b %b %b", ac.Mode.validate(), ac.Fan.validate(), ac.Power.validate(), ac.Temp.validate())
+	return ac.Mode.validate() &&
+		ac.Fan.validate() &&
+		ac.Power.validate() &&
+		ac.Temp.validate()
 }
 
 func NewAcState(fan string, mode string, power string, temp string) *AcState {
