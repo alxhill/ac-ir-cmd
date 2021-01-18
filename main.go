@@ -6,14 +6,13 @@ package main
 // #include "irslinger.h"
 import "C"
 import (
+	"alxhill.com/ac-ir-cmd/sensor"
+	"alxhill.com/ac-ir-cmd/state"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"unsafe"
-
-	"./state"
-	"./sensor"
 )
 
 func main() {
