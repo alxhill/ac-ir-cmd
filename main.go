@@ -13,17 +13,8 @@ import (
 	"unsafe"
 
 	"./state"
+	"./sensor"
 )
-
-//const ON_CMD = "1000100000100110110100000101"
-//const OFF_CMD = "1000100011000000000001010001"
-
-var defaultAcState = &state.AcState{
-	Fan:   state.LOW,
-	Mode:  state.COOL,
-	Power: state.POWER_ON,
-	Temp:  72,
-}
 
 func main() {
 	http.HandleFunc("/set", setState)
@@ -59,10 +50,19 @@ func setState(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTemp(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	_, err := w.Write([]byte("18"))
+	temp, err := sensor.GetTempCelcius()
+
 	if err != nil {
-		fmt.Printf("Failed to write temp")
+		fmt.Printf("Failed to get temp due to err %s", err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write([]byte(fmt.Sprintf("%f", temp)))
+
+	if err != nil {
+		fmt.Printf("Failed to get or write temp")
 	}
 }
 
