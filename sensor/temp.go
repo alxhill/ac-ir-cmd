@@ -5,23 +5,41 @@ import (
 	"gobot.io/x/gobot/platforms/raspi"
 )
 
-type Celcius int
+type Celcius float32
+type RelativeHumidity float32
 
-func GetTempCelcius() (float32, error) {
+type Sensors struct {
+	adaptor     *raspi.Adaptor
+	sht2xDriver *i2c.SHT2xDriver
+}
+
+func InitSensors() (*Sensors, error) {
 	r := raspi.NewAdaptor()
-	tempSensor := i2c.NewSHT2xDriver(r, i2c.WithAddress(0x40))
-	if err := tempSensor.Start(); err != nil {
-		return 0, err
+	driver := i2c.NewSHT2xDriver(r)
+	if err := driver.Start(); err != nil {
+		return nil, err
 	}
 
-	if err := tempSensor.SetAccuracy(i2c.SHT2xAccuracyHigh); err != nil {
-		return 0, err
-	}
+	return &Sensors{
+		adaptor:     r,
+		sht2xDriver: driver,
+	}, nil
+}
 
-	temp, err := tempSensor.Temperature()
+func (s *Sensors) Temperature() (Celcius, error) {
+	temp, err := s.sht2xDriver.Temperature()
 	if err != nil {
 		return 0, err
 	}
 
-	return temp, nil
+	return Celcius(temp), nil
+}
+
+func (s *Sensors) Humidity() (RelativeHumidity, error) {
+	humidity, err := s.sht2xDriver.Humidity()
+	if err != nil {
+		return 0, err
+	}
+
+	return RelativeHumidity(humidity), nil
 }

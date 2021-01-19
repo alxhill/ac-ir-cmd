@@ -16,8 +16,14 @@ import (
 )
 
 func main() {
+	sensors, err := sensor.InitSensors()
+	if err != nil {
+		panic(err)
+	}
+
 	http.HandleFunc("/set", setState)
-	http.HandleFunc("/temp", getTemp)
+	http.HandleFunc("/temp", getTemp(sensors))
+	http.HandleFunc("/humidity", getHumidity(sensors))
 
 	fmt.Println("Starting server...")
 
@@ -48,20 +54,39 @@ func setState(w http.ResponseWriter, r *http.Request) {
 	sendIrCommand(&decodedBody)
 }
 
-func getTemp(w http.ResponseWriter, r *http.Request) {
-	temp, err := sensor.GetTempCelcius()
+func getTemp(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		temp, err := s.Temperature()
+		if err != nil {
+			fmt.Printf("Failed to get temp due to err %s", err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	if err != nil {
-		fmt.Printf("Failed to get temp due to err %s", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte(fmt.Sprintf("%f", temp)))
+
+		if err != nil {
+			fmt.Printf("Failed to get or write temp")
+		}
 	}
+}
 
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write([]byte(fmt.Sprintf("%f", temp)))
+func getHumidity(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		humidity, err := s.Humidity()
+		if err != nil {
+			fmt.Printf("Failed to get humidity due to err %s", err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-	if err != nil {
-		fmt.Printf("Failed to get or write temp")
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte(fmt.Sprintf("%f", humidity)))
+
+		if err != nil {
+			fmt.Printf("Failed to get or write humidity")
+		}
 	}
 }
 
