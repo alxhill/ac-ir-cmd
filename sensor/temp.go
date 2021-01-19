@@ -1,18 +1,17 @@
 package sensor
 
 import (
-	"gobot.io/x/gobot/platforms/raspi"
-	//"periph.io/x/conn/v3/i2c/i2creg"
-	//"periph.io/x/conn/v3/i2c"
-	//"periph.io/x/conn/v3/i2c/i2creg"
 	"gobot.io/x/gobot/drivers/i2c"
+	"gobot.io/x/gobot/platforms/raspi"
 )
 
 type Celcius int
 
-func GetTempCelcius() (float32, error) {
+func GetTempCelcius(chan Celcius) (float32, error) {
 	r := raspi.NewAdaptor()
+
 	tempSensor := i2c.NewSHT2xDriver(r)
+	tempSensor.Start()
 
 	err := tempSensor.SetAccuracy(i2c.SHT2xAccuracyHigh)
 
