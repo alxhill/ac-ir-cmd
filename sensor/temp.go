@@ -7,7 +7,7 @@ import (
 
 type Celcius int
 
-func GetTempCelcius(chan Celcius) (float32, error) {
+func GetTempCelcius() (float32, error) {
 	r := raspi.NewAdaptor()
 
 	tempSensor := i2c.NewSHT2xDriver(r)
