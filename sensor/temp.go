@@ -21,10 +21,6 @@ func InitSensors() (*Sensors, error) {
 		return nil, err
 	}
 
-	if err := driver.SetAccuracy(i2c.SHT2xAccuracyMedium); err != nil {
-		return nil, err
-	}
-
 	return &Sensors{
 		adaptor:     r,
 		sht2xDriver: driver,
