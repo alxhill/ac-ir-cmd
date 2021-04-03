@@ -88,13 +88,16 @@ static inline int transmitWave(uint32_t outPin, gpioPulse_t *irSignal, unsigned 
 	{
 		time_sleep(0.1);
 	}
+	printf("Wave finished transmitting %i\n", waveID);
 
 	// Delete the wave if it exists
 	if (waveID >= 0)
 	{
+	    printf("Deleted wave %i\n", waveID);
 		gpioWaveDelete(waveID);
 	}
 
+    printf("Cleaning up\n");
 	// Cleanup
 	gpioTerminate();
 	return 0;

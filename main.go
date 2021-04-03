@@ -106,8 +106,9 @@ func sendIrCommand(acState *state.AcState) {
 	oneGap := C.int(1688)
 	zeroGap := C.int(562)
 	sendTrailingPulse := C.int(1)
-
+	fmt.Println("!!!Before")
 	result, err := C.irSling(outPin, frequency, dutyCycle, leadingPulseDuration, leadingGapDuration, onePulse, zeroPulse, oneGap, zeroGap, sendTrailingPulse, commandStrC)
+	fmt.Println("!!!After")
 
 	fmt.Printf("Command ran, result: %d, error: %s\n", int(result), err)
 }
