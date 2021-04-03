@@ -18,6 +18,7 @@ func InitSensors() (*Sensors, error) {
 	r := raspi.NewAdaptor()
 	driver := i2c.NewSHT2xDriver(r)
 	if err := driver.Start(); err != nil {
+		log.Fatal(err.Error(), err)
 		return nil, err
 	}
 
