@@ -13,6 +13,8 @@ import (
 	"log"
 	"net/http"
 	"unsafe"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -20,6 +22,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// ignore SIGURG due to some unusual bug that's triggering it
+	signal.Ignore(syscall.SIGURG)
 
 	http.HandleFunc("/set", setState)
 	http.HandleFunc("/temp", getTemp(sensors))
