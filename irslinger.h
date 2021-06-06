@@ -3,7 +3,6 @@
 
 #include <string.h>
 #include <math.h>
-#include <signal.h>
 #include <pigpio.h>
 
 #define MAX_COMMAND_SIZE 512
@@ -167,8 +166,6 @@ static inline int irSling(uint32_t outPin,
 	int sendTrailingPulse,
 	const char *code)
 {
-	sigignore(SIGURG);
-	
 	if (outPin > 31)
 	{
 		// Invalid pin number
