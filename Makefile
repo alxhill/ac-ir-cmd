@@ -12,3 +12,4 @@ irslinger: c/irslinger.c
 install: all
 	cp irslinger /usr/bin/irslinger
 	cp ac-ir-cmd /usr/bin/ac-ir-cmd
+	sudo ln -s ac-server.service /etc/systemd/system/ac-server.service
