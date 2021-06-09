@@ -94,6 +94,6 @@ func sendIrCommand(acState *state.AcState) {
 	if err != nil {
 		fmt.Printf("Command had error %s\n", err)
 	} else {
-		fmt.Printf("Sent IR command successfully")
+		fmt.Println("Sent IR command successfully")
 	}
 }
