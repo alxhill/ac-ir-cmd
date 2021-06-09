@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Wpedantic -lm -lpigpio -pthread -lrt
 
-all: server ir
-	
+all: ac-ir-cmd ir-cmd
+
 ac-ir-cmd: main.go
 	go build .
 

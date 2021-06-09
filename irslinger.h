@@ -9,9 +9,9 @@
 #define MAX_COMMAND_SIZE 512
 #define MAX_PULSES 12000
 
-static inline void addPulse(uint32_t onPins, uint32_t offPins, uint32_t duration, gpioPulse_t *irSignal, int *pulseCount)
+static inline void addPulse(uint32_t onPins, uint32_t offPins, uint32_t duration, gpioPulse_t *irSignal, unsigned int *pulseCount)
 {
-	int index = *pulseCount;
+	unsigned int index = *pulseCount;
 
 	irSignal[index].gpioOn = onPins;
 	irSignal[index].gpioOff = offPins;
@@ -22,7 +22,7 @@ static inline void addPulse(uint32_t onPins, uint32_t offPins, uint32_t duration
 
 // Generates a square wave for duration (microseconds) at frequency (Hz)
 // on GPIO pin outPin. dutyCycle is a floating value between 0 and 1.
-static inline void carrierFrequency(uint32_t outPin, double frequency, double dutyCycle, double duration, gpioPulse_t *irSignal, int *pulseCount)
+static inline void carrierFrequency(uint32_t outPin, double frequency, double dutyCycle, double duration, gpioPulse_t *irSignal, unsigned int *pulseCount)
 {
 	double oneCycleTime = 1000000.0 / frequency; // 1000000 microseconds in a second
 	int onDuration = (int)round(oneCycleTime * dutyCycle);
@@ -48,7 +48,7 @@ static inline void carrierFrequency(uint32_t outPin, double frequency, double du
 }
 
 // Generates a low signal gap for duration, in microseconds, on GPIO pin outPin
-static inline void gap(double duration, gpioPulse_t *irSignal, int *pulseCount)
+static inline void gap(double duration, gpioPulse_t *irSignal, unsigned int *pulseCount)
 {
 	addPulse(0, 0, duration, irSignal, pulseCount);
 }
@@ -137,19 +137,19 @@ static inline int irSling(uint32_t outPin,
 
 	// Generate Code
 	carrierFrequency(outPin, frequency, dutyCycle, leadingPulseDuration, irSignal, &pulseCount);
-	gap(outPin, leadingGapDuration, irSignal, &pulseCount);
+	gap(leadingGapDuration, irSignal, &pulseCount);
 
 	for (unsigned int i = 0; i < codeLen; i++)
 	{
 		if (code[i] == '0')
 		{
 			carrierFrequency(outPin, frequency, dutyCycle, zeroPulse, irSignal, &pulseCount);
-			gap(outPin, zeroGap, irSignal, &pulseCount);
+			gap(zeroGap, irSignal, &pulseCount);
 		}
 		else if (code[i] == '1')
 		{
 			carrierFrequency(outPin, frequency, dutyCycle, onePulse, irSignal, &pulseCount);
-			gap(outPin, oneGap, irSignal, &pulseCount);
+			gap(oneGap, irSignal, &pulseCount);
 		}
 		else
 		{
@@ -182,15 +182,14 @@ static inline int irSlingRaw(uint32_t outPin,
 
 	// Generate Code
 	gpioPulse_t irSignal[MAX_PULSES];
-	int pulseCount = 0;
+	unsigned int pulseCount = 0;
 
-	int i;
-	for (i = 0; i < numPulses; i++)
+	for (unsigned int i = 0; i < numPulses; i++)
 	{
 		if (i % 2 == 0) {
 			carrierFrequency(outPin, frequency, dutyCycle, pulses[i], irSignal, &pulseCount);
 		} else {
-			gap(outPin, pulses[i], irSignal, &pulseCount);
+			gap(pulses[i], irSignal, &pulseCount);
 		}
 	}
 
