@@ -52,6 +52,11 @@ func setState(w http.ResponseWriter, r *http.Request) {
 
 func getTemp(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			w.WriteHeader((http.StatusMethodNotAllowed))
+			return
+		}
+
 		temp, err := s.Temperature()
 		if err != nil {
 			fmt.Printf("Failed to get temp due to err %s", err.Error())
