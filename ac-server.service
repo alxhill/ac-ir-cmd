@@ -1,0 +1,9 @@
+[Unit]
+Description=AC IR Server
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/bin/ac-ir-cmd
+
+[Install]
+WantedBy=multi-user.target
