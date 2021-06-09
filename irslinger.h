@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 #include <pigpio.h>
 
 #define MAX_COMMAND_SIZE 512
@@ -47,7 +48,7 @@ static inline void carrierFrequency(uint32_t outPin, double frequency, double du
 }
 
 // Generates a low signal gap for duration, in microseconds, on GPIO pin outPin
-static inline void gap(uint32_t outPin, double duration, gpioPulse_t *irSignal, int *pulseCount)
+static inline void gap(double duration, gpioPulse_t *irSignal, int *pulseCount)
 {
 	addPulse(0, 0, duration, irSignal, pulseCount);
 }
@@ -103,57 +104,6 @@ static inline int transmitWave(uint32_t outPin, gpioPulse_t *irSignal, unsigned 
 	return 0;
 }
 
-static inline int irSlingRC5(uint32_t outPin,
-	int frequency,
-	double dutyCycle,
-	int pulseDuration,
-	const char *code)
-{
-	if (outPin > 31)
-	{
-		// Invalid pin number
-		return 1;
-	}
-
-	size_t codeLen = strlen(code);
-
-	printf("code size is %zu\n", codeLen);
-
-	if (codeLen > MAX_COMMAND_SIZE)
-	{
-		// Command is too big
-		return 1;
-	}
-
-	gpioPulse_t irSignal[MAX_PULSES];
-	int pulseCount = 0;
-
-	// Generate Code
-	int i;
-	for (i = 0; i < codeLen; i++)
-	{
-		if (code[i] == '0')
-		{
-			carrierFrequency(outPin, frequency, dutyCycle, pulseDuration, irSignal, &pulseCount);
-			gap(outPin, pulseDuration, irSignal, &pulseCount);
-		}
-		else if (code[i] == '1')
-		{
-			gap(outPin, pulseDuration, irSignal, &pulseCount);
-			carrierFrequency(outPin, frequency, dutyCycle, pulseDuration, irSignal, &pulseCount);
-		}
-		else
-		{
-			printf("Warning: Non-binary digit in command\n");
-		}
-	}
-
-	printf("pulse count is %i\n", pulseCount);
-	// End Generate Code
-
-	return transmitWave(outPin, irSignal, &pulseCount);
-}
-
 static inline int irSling(uint32_t outPin,
 	int frequency,
 	double dutyCycle,
@@ -183,14 +133,13 @@ static inline int irSling(uint32_t outPin,
 	}
 
 	gpioPulse_t irSignal[MAX_PULSES];
-	int pulseCount = 0;
+	unsigned int pulseCount = 0;
 
 	// Generate Code
 	carrierFrequency(outPin, frequency, dutyCycle, leadingPulseDuration, irSignal, &pulseCount);
 	gap(outPin, leadingGapDuration, irSignal, &pulseCount);
 
-	int i;
-	for (i = 0; i < codeLen; i++)
+	for (unsigned int i = 0; i < codeLen; i++)
 	{
 		if (code[i] == '0')
 		{
