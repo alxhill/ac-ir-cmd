@@ -1,20 +1,13 @@
 package main
 
-// #cgo LDFLAGS: -lm -lpigpio -pthread -lrt
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include "irslinger.h"
-import "C"
 import (
-	"alxhill.com/ac-ir-cmd/sensor"
-	"alxhill.com/ac-ir-cmd/state"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"unsafe"
-	"os/signal"
-	"syscall"
+
+	"alxhill.com/ac-ir-cmd/sensor"
+	"alxhill.com/ac-ir-cmd/state"
 )
 
 func main() {
@@ -22,9 +15,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// ignore SIGURG due to some unusual bug that's triggering it
-	signal.Ignore(syscall.SIGURG)
 
 	http.HandleFunc("/set", setState)
 	http.HandleFunc("/temp", getTemp(sensors))
@@ -97,23 +87,24 @@ func getHumidity(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
 
 func sendIrCommand(acState *state.AcState) {
 	commandStr := acState.GetCommand()
-	commandStrC := C.CString(commandStr)
-	defer C.free(unsafe.Pointer(commandStrC))
+	// commandStrC := C.CString(commandStr)
+	// defer C.free(unsafe.Pointer(commandStrC))
 
-	outPin := C.uint(17)
-	frequency := C.int(38000)
-	dutyCycle := C.double(0.5)
+	// outPin := C.uint(17)
+	// frequency := C.int(38000)
+	// dutyCycle := C.double(0.5)
 
-	leadingPulseDuration := C.int(9000)
-	leadingGapDuration := C.int(4500)
-	onePulse := C.int(562)
-	zeroPulse := C.int(562)
-	oneGap := C.int(1688)
-	zeroGap := C.int(562)
-	sendTrailingPulse := C.int(1)
-	fmt.Println("!!!Before")
-	result, err := C.irSling(outPin, frequency, dutyCycle, leadingPulseDuration, leadingGapDuration, onePulse, zeroPulse, oneGap, zeroGap, sendTrailingPulse, commandStrC)
-	fmt.Println("!!!After")
+	// leadingPulseDuration := C.int(9000)
+	// leadingGapDuration := C.int(4500)
+	// onePulse := C.int(562)
+	// zeroPulse := C.int(562)
+	// oneGap := C.int(1688)
+	// zeroGap := C.int(562)
+	// sendTrailingPulse := C.int(1)
+	// fmt.Println("!!!Before")
+	// result, err := C.irSling(outPin, frequency, dutyCycle, leadingPulseDuration, leadingGapDuration, onePulse, zeroPulse, oneGap, zeroGap, sendTrailingPulse, commandStrC)
+	// fmt.Println("!!!After")
 
-	fmt.Printf("Command ran, result: %d, error: %s\n", int(result), err)
+	// fmt.Printf("Command ran, result: %d, error: %s\n", int(result), err)
+	fmt.Printf("Command %s\n", commandStr)
 }
