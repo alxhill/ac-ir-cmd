@@ -1,11 +1,12 @@
 package main
 
-import "C"
+// import "C"
 import (
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 
 	"alxhill.com/ac-ir-cmd/sensor"
 	"alxhill.com/ac-ir-cmd/state"
@@ -88,24 +89,12 @@ func getHumidity(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
 
 func sendIrCommand(acState *state.AcState) {
 	commandStr := acState.GetCommand()
-	// commandStrC := C.CString(commandStr)
-	// defer C.free(unsafe.Pointer(commandStrC))
+	cmd := exec.Command("./irslinger", commandStr)
+	err := cmd.Run()
 
-	// outPin := C.uint(17)
-	// frequency := C.int(38000)
-	// dutyCycle := C.double(0.5)
-
-	// leadingPulseDuration := C.int(9000)
-	// leadingGapDuration := C.int(4500)
-	// onePulse := C.int(562)
-	// zeroPulse := C.int(562)
-	// oneGap := C.int(1688)
-	// zeroGap := C.int(562)
-	// sendTrailingPulse := C.int(1)
-	// fmt.Println("!!!Before")
-	// result, err := C.irSling(outPin, frequency, dutyCycle, leadingPulseDuration, leadingGapDuration, onePulse, zeroPulse, oneGap, zeroGap, sendTrailingPulse, commandStrC)
-	// fmt.Println("!!!After")
-
-	// fmt.Printf("Command ran, result: %d, error: %s\n", int(result), err)
-	fmt.Printf("Command %s\n", commandStr)
+	if err != nil {
+		fmt.Printf("Command had error %s\n", err)
+	} else {
+		fmt.Printf("Sent IR command successfully")
+	}
 }
