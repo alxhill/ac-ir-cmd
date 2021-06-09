@@ -9,26 +9,6 @@
 #define MAX_COMMAND_SIZE 512
 #define MAX_PULSES 12000
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-		printf("What are you doing, pass a command string in thicko.\n");
-        return -1;
-    }
-
-    return irSling(
-        17,
-        38000,
-        0.5,
-        9000,
-        4500,
-        562,
-        562,
-        1688,
-        562,
-        1,
-        argv[1]);
-}
-
 static inline void addPulse(uint32_t onPins, uint32_t offPins, uint32_t duration, gpioPulse_t *irSignal, unsigned int *pulseCount)
 {
 	unsigned int index = *pulseCount;
@@ -186,6 +166,26 @@ static inline int irSling(uint32_t outPin,
 	// End Generate Code
 
 	return transmitWave(outPin, irSignal, &pulseCount);
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+		printf("What are you doing, pass a command string in thicko.\n");
+        return -1;
+    }
+
+    return irSling(
+        17,
+        38000,
+        0.5,
+        9000,
+        4500,
+        562,
+        562,
+        1688,
+        562,
+        1,
+        argv[1]);
 }
 
 #endif
