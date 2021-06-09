@@ -88,7 +88,7 @@ func getHumidity(s *sensor.Sensors) func(http.ResponseWriter, *http.Request) {
 
 func sendIrCommand(acState *state.AcState) {
 	commandStr := acState.GetCommand()
-	cmd := exec.Command("./irslinger", commandStr)
+	cmd := exec.Command("irslinger", commandStr)
 	err := cmd.Run()
 
 	if err != nil {
