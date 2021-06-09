@@ -168,35 +168,4 @@ static inline int irSling(uint32_t outPin,
 	return transmitWave(outPin, irSignal, &pulseCount);
 }
 
-static inline int irSlingRaw(uint32_t outPin,
-	int frequency,
-	double dutyCycle,
-	const int *pulses,
-	int numPulses)
-{
-	if (outPin > 31)
-	{
-		// Invalid pin number
-		return 1;
-	}
-
-	// Generate Code
-	gpioPulse_t irSignal[MAX_PULSES];
-	unsigned int pulseCount = 0;
-
-	for (unsigned int i = 0; i < numPulses; i++)
-	{
-		if (i % 2 == 0) {
-			carrierFrequency(outPin, frequency, dutyCycle, pulses[i], irSignal, &pulseCount);
-		} else {
-			gap(pulses[i], irSignal, &pulseCount);
-		}
-	}
-
-	printf("pulse count is %i\n", pulseCount);
-	// End Generate Code
-
-	return transmitWave(outPin, irSignal, &pulseCount);
-}
-
 #endif
