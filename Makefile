@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Wpedantic -lm -lpigpio -pthread -lrt
 
-all: ac-ir-cmd ir-cmd
+all: ac-ir-cmd irslinger
 
 ac-ir-cmd: main.go
 	go build .
 
-ir-cmd: main.c irslinger.h
+irslinger irslinger.c
 	$(CC) $(CFLAGS) $< -o $@

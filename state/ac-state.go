@@ -105,7 +105,7 @@ func (power PowerState) validate() bool {
 
 func (power PowerState) powerBinary() uint32 {
 	if power == POWER_OFF {
-		panic("not implemented")
+		panic("this codepath should never have been hit")
 	}
 	return 0x0
 }
