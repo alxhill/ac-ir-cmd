@@ -6,5 +6,5 @@ all: ac-ir-cmd irslinger
 ac-ir-cmd: main.go
 	go build .
 
-irslinger irslinger.c
+irslinger: c/irslinger.c
 	$(CC) $(CFLAGS) $< -o $@
