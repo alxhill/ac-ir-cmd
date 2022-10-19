@@ -17,7 +17,7 @@ ac-ir-cmd: main.go
 	go build .
 
 irslinger: c/irslinger.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $< -o $@ $(CFLAGS)
 
 install: all
 	sudo systemctl stop ac-server
